@@ -1,0 +1,46 @@
+# CC-0 (public domain)
+# but please link to the source so that people can more easily reuse
+# (if relevant)
+
+name: Check Python version matches tag
+description: Manage multiple branches in gh-pages
+
+inputs:
+  module_name:
+    description: 'Name of the Python module to check (default inferred from directory name)'
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Verify that this is a tag push
+      if: ! startsWith(github.ref, 'refs/tags')
+      run: |
+        echo "::error::This action only makes sense when run on a tag (github.ref = ${{github.ref}} which does not start with refs/tags/)"
+        exit 1
+    - name: Install the current project (pip install .)
+      shell: bash
+      run: |
+        pip install .
+    - name: Check Python version against the tag
+      shell: bash
+      run: |
+        pip install .
+        # If MOD_NAME not defined, infer it from the directory name
+        MOD_NAME="${{ inputs.module_name }}"
+        if [ -z "$MOD_NAME" ] ; then
+            # strip leading directories
+            MOD_NAME=${PWD##*/}
+            # replace '-' with '_'
+            MOD_NAME=${MOD_NAME//-/_}
+        fi
+        # Find the versions
+        MOD_VERSION=$(python -c "import $MOD_NAME ; print($MOD_NAME.__version__)")
+        echo $MOD_VERSION
+        TAG_VERSION=${{ github.ref }}
+        echo $TAG_VERSION
+        TAG_VERSION=${TAG_VERSION##refs/tags/}   # remove leading 'refs/tags/'
+        # Do the actual check
+        if [ "$MOD_VERSION" != "$TAG_VERSION" ] ; then
+          echo "::error::Module version ($MOD_VERSION) des not match tag version ($TAG_VERSION)"
+          exit 1
+        fi
