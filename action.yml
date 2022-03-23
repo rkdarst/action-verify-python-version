@@ -2,7 +2,7 @@
 # but please link to the source so that people can more easily reuse
 # (if relevant)
 
-name: Check Python version matches tag
+name: Ensure the Python module version matches the tag name
 description: Manage multiple branches in gh-pages
 
 inputs:
