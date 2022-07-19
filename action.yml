@@ -24,8 +24,10 @@ runs:
     - name: Verify that this is a tag push
       if: "! startsWith(github.ref, 'refs/tags')"
       shell: bash
+      env:
+        github_ref: ${{github.ref}}
       run: |
-        echo "::error::This action only makes sense when run on a tag (github.ref = ${{github.ref}} which does not start with refs/tags/)"
+        echo "::error::This action only makes sense when run on a tag (github.ref = ${github_ref} which does not start with refs/tags/)"
         exit 1
     - name: Install the current project (pip install .)
       shell: bash
