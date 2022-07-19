@@ -21,7 +21,7 @@ module can be imported):
 ```yaml
       - uses: rkdarst/action-verify-python-version@main
         with:
-		  module_name: my_python_module
+          module_name: my_python_module
 ```
 
 
