@@ -23,21 +23,25 @@ runs:
         pip install .
     - name: Check Python version against the tag
       shell: bash
+      env:
+        module_name: ${{inputs.module_name}}
+        github_ref: ${{github.ref}}
       run: |
         pip install .
         # If MOD_NAME not defined, infer it from the directory name
-        MOD_NAME="${{ inputs.module_name }}"
+        MOD_NAME="${module_name}"
         if [ -z "$MOD_NAME" ] ; then
             # strip leading directories
             MOD_NAME=${PWD##*/}
             # replace '-' with '_'
             MOD_NAME=${MOD_NAME//-/_}
+            echo Detected MOD_NAME = "$MOD_NAME" from PWD = "$PWD"
         fi
         # Find the versions
         MOD_VERSION=$(python -c "import $MOD_NAME ; print($MOD_NAME.__version__)")
-        echo $MOD_VERSION
-        TAG_VERSION=${{ github.ref }}
-        echo $TAG_VERSION
+        echo MOD_VERSION = $MOD_VERSION
+        TAG_VERSION="${github_ref}"
+        echo TAG_VERSION = $TAG_VERSION
         TAG_VERSION=${TAG_VERSION##refs/tags/}   # remove leading 'refs/tags/'
         # Do the actual check
         if [ "$MOD_VERSION" != "$TAG_VERSION" ] ; then
