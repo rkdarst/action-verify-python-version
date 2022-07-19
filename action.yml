@@ -9,6 +9,15 @@ inputs:
   module_name:
     description: 'Name of the Python module to check (default inferred from directory name)'
     default: ''
+  remove_prefix:
+    description: 'Remove this prefix from the git tag before the comparison.'
+    default: ''
+  remove_suffix:
+    description: 'Remove this suffix from the git tag before the comparison.'
+    default: ''
+  no_install:
+    description: 'Do not install the package automatically (you must install it yourself before running this action. (unset/true, default unset)'
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -21,13 +30,20 @@ runs:
       shell: bash
       run: |
         pip install .
+    - name: Install the module with `pip install .`
+      shell: bash
+      if: ${{ inputs.no_install }} != ''
+      run: |
+        pip install .
+
     - name: Check Python version against the tag
       shell: bash
       env:
         module_name: ${{inputs.module_name}}
         github_ref: ${{github.ref}}
+        remove_prefix: ${{inputs.remove_prefix}}
+        remove_suffix: ${{inputs.remove_suffix}}
       run: |
-        pip install .
         # If MOD_NAME not defined, infer it from the directory name
         MOD_NAME="${module_name}"
         if [ -z "$MOD_NAME" ] ; then
@@ -37,12 +53,24 @@ runs:
             MOD_NAME=${MOD_NAME//-/_}
             echo Detected MOD_NAME = "$MOD_NAME" from PWD = "$PWD"
         fi
-        # Find the versions
+
+        # Find the module version
         MOD_VERSION=$(python -c "import $MOD_NAME ; print($MOD_NAME.__version__)")
         echo MOD_VERSION = $MOD_VERSION
+
+        # Find tag version
         TAG_VERSION="${github_ref}"
-        echo TAG_VERSION = $TAG_VERSION
-        TAG_VERSION=${TAG_VERSION##refs/tags/}   # remove leading 'refs/tags/'
+        echo raw TAG_VERSION = $TAG_VERSION
+        TAG_VERSION="${TAG_VERSION##refs/tags/}"  # remove leading 'refs/tags/'
+        # Remove prefixes/suffixes if desired
+        if [ -n "$remove_prefix" ] ; then
+            TAG_VERSION="${TAG_VERSION#$remove_prefix}"
+        fi
+        if [ -n "$remove_suffix" ] ; then
+            TAG_VERSION="${TAG_VERSION%$remove_suffix}"
+        fi
+        echo after suffix processing TAG_VERSION = $TAG_VERSION
+
         # Do the actual check
         if [ "$MOD_VERSION" != "$TAG_VERSION" ] ; then
           echo "::error::Module version ($MOD_VERSION) des not match tag version ($TAG_VERSION)"
