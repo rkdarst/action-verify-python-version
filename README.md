@@ -10,7 +10,7 @@ following two things match, if not fail:
 This would be used as part of a release workflow, like such:
 
 ```yaml
-      - uses: rkdarst/action-verify-python-version@master
+      - uses: rkdarst/action-verify-python-version@main
 ```
 
 The module name is detected from of the repository directory name
@@ -19,7 +19,7 @@ correct, specify explicitly (this should be the name by which the
 module can be imported):
 
 ```yaml
-      - uses: rkdarst/action-verify-python-version@master
+      - uses: rkdarst/action-verify-python-version@main
         with:
 		  module_name: my_python_module
 ```
