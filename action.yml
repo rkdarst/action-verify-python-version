@@ -22,7 +22,7 @@ runs:
   using: "composite"
   steps:
     - name: Verify that this is a tag push
-      if: ! startsWith(github.ref, 'refs/tags')
+      if: "! startsWith(github.ref, 'refs/tags')"
       run: |
         echo "::error::This action only makes sense when run on a tag (github.ref = ${{github.ref}} which does not start with refs/tags/)"
         exit 1
