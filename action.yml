@@ -11,7 +11,7 @@ inputs:
     default: ''
   remove_prefix:
     description: 'Remove this prefix from the git tag before the comparison.'
-    default: ''
+    default: 'v'
   remove_suffix:
     description: 'Remove this suffix from the git tag before the comparison.'
     default: ''
