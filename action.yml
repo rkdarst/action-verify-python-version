@@ -29,10 +29,6 @@ runs:
       run: |
         echo "::error::This action only makes sense when run on a tag (github.ref = ${github_ref} which does not start with refs/tags/)"
         exit 1
-    - name: Install the current project (pip install .)
-      shell: bash
-      run: |
-        pip install .
     - name: Install the module with `pip install .`
       shell: bash
       if: ${{ inputs.no_install }} != ''
