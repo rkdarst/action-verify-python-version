@@ -25,6 +25,21 @@ module can be imported):
 ```
 
 
+## Configuration
+
+`with:` in the action:
+
+* `module_name`: Use this as the python module name (for
+  `module_name.__version__`) rather than auto-detecting from the
+  directory name.  Default: auto-detect.
+* `remove_prefix`: strip this from the start of tag name (if it's not
+  there, succeed without stripping anything).  Default: `v`.
+* `remove_suffix`: strip this from the end of the tag name.  Default:
+  `''` (don't strip anything)
+* `no_install`: If this is set to anything, don't run `pip install -e
+  .` before this action.  You must install the package yourself so
+  that Python can import it and run `module_name.__version__`.
+
 
 ## Assumptions and caveats
 
