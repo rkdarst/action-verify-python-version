@@ -9,10 +9,10 @@ inputs:
   module_name:
     description: 'Name of the Python module to check (default inferred from directory name)'
     default: ''
-  remove_prefix:
+  tag_remove_prefix:
     description: 'Remove this prefix from the git tag before the comparison.'
     default: 'v'
-  remove_suffix:
+  tag_remove_suffix:
     description: 'Remove this suffix from the git tag before the comparison.'
     default: ''
   no_install:
@@ -40,8 +40,8 @@ runs:
       env:
         module_name: ${{inputs.module_name}}
         github_ref: ${{github.ref}}
-        remove_prefix: ${{inputs.remove_prefix}}
-        remove_suffix: ${{inputs.remove_suffix}}
+        tag_remove_prefix: ${{inputs.tag_remove_prefix}}
+        tag_remove_suffix: ${{inputs.tag_remove_suffix}}
       run: |
         # If MOD_NAME not defined, infer it from the directory name
         MOD_NAME="${module_name}"
@@ -61,12 +61,12 @@ runs:
         TAG_VERSION="${github_ref}"
         echo raw TAG_VERSION = $TAG_VERSION
         TAG_VERSION="${TAG_VERSION##refs/tags/}"  # remove leading 'refs/tags/'
-        # Remove prefixes/suffixes if desired
+        # Remove prefixes/suffixes from tag if desired
         if [ -n "$remove_prefix" ] ; then
-            TAG_VERSION="${TAG_VERSION#$remove_prefix}"
+            TAG_VERSION="${TAG_VERSION#$tag_remove_prefix}"
         fi
         if [ -n "$remove_suffix" ] ; then
-            TAG_VERSION="${TAG_VERSION%$remove_suffix}"
+            TAG_VERSION="${TAG_VERSION%$tag_remove_suffix}"
         fi
         echo after suffix processing TAG_VERSION = $TAG_VERSION
 
