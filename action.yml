@@ -16,7 +16,7 @@ inputs:
     description: 'Remove this suffix from the git tag before the comparison.'
     default: ''
   no_install:
-    description: 'Do not install the package automatically (you must install it yourself before running this action. (unset/true, default unset)'
+    description: 'Do not install the package automatically (you must install it yourself before running this action. (values: unset/true, default unset)'
     default: ''
 runs:
   using: "composite"
@@ -31,7 +31,7 @@ runs:
         exit 1
     - name: Install the module with `pip install .`
       shell: bash
-      if: ${{ inputs.no_install }} != ''
+      if: ${{ inputs.no_install }} != 'true'
       run: |
         pip install .
 
